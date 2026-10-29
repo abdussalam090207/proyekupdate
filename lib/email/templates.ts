@@ -63,7 +63,7 @@ export function commentEmailTemplate(comment: Pick<Comment, 'name' | 'email' | '
 
   const text = `Komentar baru dari ${comment.name} (${comment.email})\n\nWaktu: ${timeWIB}\n\nPesan:\n${comment.message}\n\nBuka di Admin: ${siteUrl}/adminalam/comments`
 
-  const subject = `Komentar baru dari ${comment.name} — UPDATE PROYEK`
+  const subject = `Komentar baru dari ${comment.name} | UPDATE PROYEK`
 
   const html = emailLayout({
     preheader: `Komentar baru dari ${comment.name}: ${comment.message.slice(0, 80)}`,

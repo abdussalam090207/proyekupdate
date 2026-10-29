@@ -3,7 +3,7 @@ import CommentList from '@/components/admin/CommentList'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Komentar — Admin UPDATE PROYEK',
+  title: 'Komentar | Admin UPDATE PROYEK',
   robots: { index: false, follow: false },
 }
 

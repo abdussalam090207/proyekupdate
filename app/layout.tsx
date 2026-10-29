@@ -9,7 +9,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'UPDATE PROYEK — Pantau Progres Website',
+  title: 'UPDATE PROYEK | Pantau Progres Website',
   description: 'Pantau progres pengerjaan website secara real-time. Lihat timeline, status, dan update terbaru.',
 }
 

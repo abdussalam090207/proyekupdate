@@ -4,7 +4,7 @@ import ProjectTitleForm from '@/components/admin/ProjectTitleForm'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Control — Admin UPDATE PROYEK',
+  title: 'Control | Admin UPDATE PROYEK',
   robots: { index: false, follow: false },
 }
 

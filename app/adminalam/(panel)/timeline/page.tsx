@@ -3,7 +3,7 @@ import TimelineAdminList from '@/components/admin/TimelineAdminList'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Timeline — Admin UPDATE PROYEK',
+  title: 'Timeline | Admin UPDATE PROYEK',
   robots: { index: false, follow: false },
 }
 

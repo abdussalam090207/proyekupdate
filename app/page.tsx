@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const title = project?.title ?? 'Belum ada judul proyek'
   return {
-    title: `${title} — UPDATE PROYEK`,
+    title: `${title} | UPDATE PROYEK`,
     description: `Pantau progres: ${title}. Lihat timeline dan status terbaru.`,
   }
 }
