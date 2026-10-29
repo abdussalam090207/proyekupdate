@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# UPDATE PROYEK
 
-## Getting Started
+Aplikasi web sederhana untuk memberi tahu client progres pengerjaan proyek website.
 
-First, run the development server:
+## Cara Setup
+
+### 1. Clone & Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Isi `.env.local`
+
+Salin dari `.env.example` lalu isi semua nilainya:
+
+```bash
+cp .env.example .env.local
+```
+
+Variabel yang wajib diisi:
+- `NEXT_PUBLIC_SUPABASE_URL` — URL project Supabase
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Anon key Supabase
+- `SUPABASE_SERVICE_ROLE_KEY` — Service role key (rahasia, server only)
+- `ADMIN_USERNAME` — Username login admin (`profalam`)
+- `ADMIN_AUTH_EMAIL` — Email Auth Supabase untuk admin
+- `ADMIN_PASSWORD` — Password untuk script pembuatan admin
+- `RESEND_API_KEY` — API key dari Resend
+- `CRON_SECRET` — String acak ≥ 32 karakter untuk mengamankan endpoint cron
+- `IP_HASH_SALT` — String acak untuk hashing IP
+
+### 3. Setup Supabase
+
+1. Buat project di [supabase.com](https://supabase.com)
+2. Jalankan `supabase/schema.sql` di **SQL Editor**
+3. Di **Authentication → Providers → Email**: aktifkan, lalu **matikan "Allow new users to sign up"**
+
+### 4. Buat User Admin
+
+```bash
+node --env-file=.env.local scripts/create-admin.mjs
+```
+
+### 5. Jalankan Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3000](http://localhost:3000) untuk halaman publik.
+Buka [http://localhost:3000/adminalam](http://localhost:3000/adminalam) untuk login admin.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Login dengan:
+- **Username**: `profalam`  
+- **Password**: nilai `ADMIN_PASSWORD` di `.env.local`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Struktur Halaman
 
-## Learn More
+| URL | Keterangan |
+|---|---|
+| `/` | Halaman publik (timeline, form komentar) |
+| `/adminalam` | Login admin |
+| `/adminalam/timeline` | CRUD poin timeline |
+| `/adminalam/control` | Judul proyek, status, drag & drop urutan |
+| `/adminalam/comments` | Daftar komentar client |
 
-To learn more about Next.js, take a look at the following resources:
+## Cron Pengingat Tenggat
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Setelah deploy, tambahkan cron job di Supabase SQL Editor (lihat `PROYEK.md` bagian 10.3):
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```sql
+create extension if not exists pg_cron;
+create extension if not exists pg_net;
 
-## Deploy on Vercel
+select cron.schedule(
+  'update-proyek-reminders',
+  '*/5 * * * *',
+  $$ select net.http_post(
+    url := 'https://DOMAIN-KAMU/api/cron/reminders',
+    headers := jsonb_build_object('Authorization', 'Bearer CRON_SECRET'),
+    body := '{}'::jsonb
+  ); $$
+);
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Asumsi
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. "Durasi waktu → Time" = tanggal + jam (untuk hitung "1 jam sebelum tenggat")
+2. Pengingat tipe date dikirim H-1 pukul 08:00 WIB
+3. Hanya ada satu proyek aktif
+4. Status "Kembalikan" ke `berjalan` tersedia agar salah klik bisa diperbaiki
